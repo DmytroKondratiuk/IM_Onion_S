@@ -192,7 +192,7 @@ repository" button in the sidebar automatically.
 
 ## License
 
-MIT (see `CITATION.cff` and forthcoming `LICENSE` file). The code is released
+Apache-2.0 (see `CITATION.cff` and forthcoming `LICENSE` file). The code is released
 for reproducibility of the dissertation results; if you build on it, please
 cite as shown above.
 
