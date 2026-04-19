@@ -1,0 +1,45 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+
+title: "IM Onion-S — Simulation Model of Digital Transformation of Agri-food Enterprises"
+
+abstract: >-
+  System Dynamics + Markov-chain simulation for strategic management of
+  digital transformation in agri-food enterprises. Calibrates the ADMI
+  index (α, δ penalty parameters) over 10 000 virtual enterprises,
+  performs scenario analysis for 5 strategies across 5/10/15-year
+  horizons, and cross-validates via Markov transition matrices. Part of
+  a PhD dissertation in Economics (specialty 051 «Економіка»).
+
+authors:
+  - family-names: Kondratiuk
+    given-names: Dmytro
+    email: dmitriy.kondratyuk@cropio.com
+    orcid: "https://orcid.org/0009-0004-7220-3568"
+
+version: "1.0.0"
+date-released: "2026-04-19"
+
+# ──────────────────────────────────────────────────────────────────────
+# DOI
+# ──────────────────────────────────────────────────────────────────────
+# doi: "10.5281/zenodo.XXXXXXX"
+
+# ──────────────────────────────────────────────────────────────────────
+# Repository and license
+# ──────────────────────────────────────────────────────────────────────
+repository-code: "https://github.com/DmytroKondratiuk/IM_Onion_S"
+license: "Apache-2.0"
+
+keywords:
+  - "digital transformation"
+  - "system dynamics"
+  - "markov chains"
+  - "agri-food"
+  - "ADMA"
+  - "ADMI"
+  - "Onion-S"
+  - "simulation"
+  - "scenario analysis"
+  - "strategic management"
