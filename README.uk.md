@@ -154,10 +154,6 @@ CONFIG = {
 
 ## Цитування
 
-<!-- TODO: замінити плейсхолдер DOI нижче після того, як Zenodo видасть DOI при першому GitHub release -->
-
-<!-- [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX) -->
-
 Якщо ви використовуєте це програмне забезпечення у дослідженнях — будь ласка,
 цитуйте його. Машиночитана метадата міститься у файлі [`CITATION.cff`](CITATION.cff);
 GitHub автоматично показує кнопку «Cite this repository» у бічній панелі
@@ -174,7 +170,7 @@ GitHub автоматично показує кнопку «Cite this repository
 
 > Kondratiuk, D. (2026). *IM Onion-S — Simulation Model of Digital
 > Transformation of Agri-food Enterprises* (Version 1.0.0) [Computer
-> software]. Zenodo. https://doi.org/10.5281/zenodo.XXXXXXX
+> software]. Zenodo. https://doi.org/10.5281/zenodo.19979159
 
 **BibTeX:**
 
@@ -186,8 +182,8 @@ GitHub автоматично показує кнопку «Cite this repository
   year         = {2026},
   version      = {1.0.0},
   publisher    = {Zenodo},
-  doi          = {10.5281/zenodo.XXXXXXX},
-  url          = {https://doi.org/10.5281/zenodo.XXXXXXX}
+  doi          = {10.5281/zenodo.19979159},
+  url          = {https://doi.org/10.5281/zenodo.19979159}
 }
 ```
 
