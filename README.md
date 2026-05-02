@@ -1,5 +1,7 @@
 > **English** · [Українська](README.uk.md)
 
+ [![DOI](https://zenodo.org/badge/1215136888.svg)](https://doi.org/10.5281/zenodo.19979159)
+
 # IM Onion-S — Simulation Model of Digital Transformation of Agri-food Enterprises
 
 Strategic management simulation of digital transformation based on **System Dynamics** + **Markov chains**. The model generates ~10,000 virtual enterprises, calibrates the penalty parameters α and δ of the ADMI formula, performs scenario analysis of 5 strategies over horizons of 5/10/15 years, cross-validates SD results against Markov transition matrices, and runs a parameter sensitivity analysis.
