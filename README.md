@@ -154,10 +154,6 @@ New scenarios are added to `CONFIG["scenarios"]` + translations in `src/i18n.py`
 
 ## Citation
 
-<!-- TODO: replace DOI placeholder below once Zenodo mints one after the first GitHub release -->
-
-<!-- [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX) -->
-
 If you use this software in your research, please cite it. Machine-readable
 metadata is in [`CITATION.cff`](CITATION.cff); GitHub renders a "Cite this
 repository" button in the sidebar automatically.
@@ -166,7 +162,7 @@ repository" button in the sidebar automatically.
 
 > Kondratiuk, D. (2026). *IM Onion-S — Simulation Model of Digital
 > Transformation of Agri-food Enterprises* (Version 1.0.0) [Computer software].
-> Zenodo. https://doi.org/10.5281/zenodo.XXXXXXX
+> Zenodo. https://doi.org/10.5281/zenodo.19979159
 
 **BibTeX:**
 
@@ -178,8 +174,8 @@ repository" button in the sidebar automatically.
   year         = {2026},
   version      = {1.0.0},
   publisher    = {Zenodo},
-  doi          = {10.5281/zenodo.XXXXXXX},
-  url          = {https://doi.org/10.5281/zenodo.XXXXXXX}
+  doi          = {10.5281/zenodo.19979159},
+  url          = {https://doi.org/10.5281/zenodo.19979159}
 }
 ```
 
@@ -187,7 +183,7 @@ repository" button in the sidebar automatically.
 
 > Кондратюк Д. IM Onion-S — Simulation Model of Digital Transformation of
 > Agri-food Enterprises: комп'ютерна програма. Версія 1.0.0. Zenodo, 2026.
-> DOI: 10.5281/zenodo.XXXXXXX. URL:
+> DOI: 10.5281/zenodo.19979159. URL:
 > https://github.com/DmytroKondratiuk/im_onion_s
 
 ---
