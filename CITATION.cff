@@ -7,7 +7,8 @@ title: "IM Onion-S — Simulation Model of Digital Transformation of Agri-food E
 abstract: >-
   System Dynamics + Markov-chain simulation for strategic management of
   digital transformation in agri-food enterprises. Calibrates the ADMI
-  index (α, δ penalty parameters) over 10 000 virtual enterprises,
+  index (α, δ penalty parameters) on synthetic enterprises (3 runs × 200
+  in the default reproducible run, up to 10 × 1000 in full mode),
   performs scenario analysis for 5 strategies across 5/10/15-year
   horizons, and cross-validates via Markov transition matrices. Part of
   a PhD dissertation in Economics (specialty 051 «Економіка»).
@@ -18,8 +19,8 @@ authors:
     email: dmitriy.kondratyuk@cropio.com
     orcid: "https://orcid.org/0009-0004-7220-3568"
 
-version: "1.0.0"
-date-released: "2026-04-19"
+version: "1.1.0"
+date-released: "2026-10-10"
 
 # ──────────────────────────────────────────────────────────────────────
 # DOI
