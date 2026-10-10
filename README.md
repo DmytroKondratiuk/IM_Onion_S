@@ -4,7 +4,7 @@
 
 # IM Onion-S — Simulation Model of Digital Transformation of Agri-food Enterprises
 
-Strategic management simulation of digital transformation based on **System Dynamics** + **Markov chains**. The model generates ~10,000 virtual enterprises, calibrates the penalty parameters α and δ of the ADMI formula, performs scenario analysis of 5 strategies over horizons of 5/10/15 years, cross-validates SD results against Markov transition matrices, and runs a parameter sensitivity analysis.
+Strategic management simulation of digital transformation based on **System Dynamics** + **Markov chains**. The model generates synthetic enterprises (3 runs × 200 in the default reproducible run; up to 10 × 1000 in full mode), calibrates the penalty parameters α and δ of the ADMI formula, performs scenario analysis of 5 strategies over horizons of 5/10/15 years, cross-validates SD results against Markov transition matrices, and runs a parameter sensitivity analysis.
 
 Outputs are a structured xlsx report with 20 sheets (tables + embedded charts + conditional-formatting heatmaps) and a set of PNG charts ready for publications.
 
@@ -116,6 +116,18 @@ None of the PNGs have an overlaid title — the caption is added in the publicat
 
 ---
 
+## Reproducibility of published results
+
+The committed `results/` and `figures/` are produced by the **default deterministic run**:
+
+```bash
+python3 generate_report.py --lang en --quick --export-pngs
+```
+
+This run uses the fixed dissertation seeds (`DEFAULT_SEEDS` in `generate_report.py`) and the quick design of **3 independent runs × 200 synthetic enterprises** (600 in total), plus the multi-horizon block (5/10/15 years). All figures quoted in the dissertation and in the related journal article (calibrated α = 0.40, δ = 0.375; baseline ADMI 0.393 → 0.348 over 5 years and −0.121 over 15 years; +0.029 for the core strategy; 3.5× relative growth for the integration strategy) are reproduced exactly by this command. The full mode (10 runs × 1000 enterprises, run without `--quick`) is available for robustness checks but is not the source of the published numbers. Passing `--seed N` derives a different seed bundle and therefore yields different values.
+
+---
+
 ## Importing `.dot` into draw.io
 
 The Stock-and-Flow diagram is saved in two formats: PNG (ready for publication) and **.dot** (Graphviz), which can be imported into draw.io for further editing:
@@ -161,7 +173,7 @@ repository" button in the sidebar automatically.
 **Recommended citation (APA-like):**
 
 > Kondratiuk, D. (2026). *IM Onion-S — Simulation Model of Digital
-> Transformation of Agri-food Enterprises* (Version 1.0.0) [Computer software].
+> Transformation of Agri-food Enterprises* (Version 1.1.0) [Computer software].
 > Zenodo. https://doi.org/10.5281/zenodo.19979159
 
 **BibTeX:**
@@ -172,7 +184,7 @@ repository" button in the sidebar automatically.
   title        = {{IM Onion-S — Simulation Model of Digital
                    Transformation of Agri-food Enterprises}},
   year         = {2026},
-  version      = {1.0.0},
+  version      = {1.1.0},
   publisher    = {Zenodo},
   doi          = {10.5281/zenodo.19979159},
   url          = {https://doi.org/10.5281/zenodo.19979159}
@@ -182,7 +194,7 @@ repository" button in the sidebar automatically.
 **ДСТУ 8302:2015 (Ukrainian academic standard):**
 
 > Кондратюк Д. IM Onion-S — Simulation Model of Digital Transformation of
-> Agri-food Enterprises: комп'ютерна програма. Версія 1.0.0. Zenodo, 2026.
+> Agri-food Enterprises: комп'ютерна програма. Версія 1.1.0. Zenodo, 2026.
 > DOI: 10.5281/zenodo.19979159. URL:
 > https://github.com/DmytroKondratiuk/im_onion_s
 
@@ -190,7 +202,7 @@ repository" button in the sidebar automatically.
 
 ## License
 
-Apache-2.0 (see `CITATION.cff` and forthcoming `LICENSE` file). The code is released
+Apache-2.0 (see `LICENSE` and `CITATION.cff`). The code is released
 for reproducibility of the dissertation results; if you build on it, please
 cite as shown above.
 
