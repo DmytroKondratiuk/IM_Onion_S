@@ -1,0 +1,113 @@
+digraph Onion_S_SD_Model {
+    rankdir=LR;
+    graph [fontname="Arial", fontsize=11, splines=curved, nodesep=0.5];
+    node  [fontname="Arial", fontsize=10];
+    edge  [fontname="Arial", fontsize=9];
+
+    // Інфлов (EI_k)
+    subgraph cluster_inflows {
+        label="Інфлов (EI_k)"; style=dashed; color=gray;
+        node [shape=diamond, style=filled, fillcolor="#d4f1d4"];
+        EI_C [label="EI_C"];
+        EI_L1 [label="EI_L1"];
+        EI_L2 [label="EI_L2"];
+        EI_L3 [label="EI_L3"];
+        EI_L4 [label="EI_L4"];
+        EI_I [label="EI_I"];
+        EI_S [label="EI_S"];
+    }
+
+    // Запас (DM_k)
+    subgraph cluster_stocks {
+        label="Запас (DM_k)"; style=dashed; color=gray;
+        node [shape=box, style=filled, fillcolor="#fff4c2"];
+        C [label="DM_C\n(ядро)"];
+        L1 [label="DM_L₁\n(HR)"];
+        L2 [label="DM_L₂\n(матеріали)"];
+        L3 [label="DM_L₃\n(логістика)"];
+        L4 [label="DM_L₄\n(збут)"];
+        I [label="DM_I\n(інтеграція)"];
+        S [label="DM_S\n(стратегія)"];
+    }
+
+    // Аутфлов (D_k)
+    subgraph cluster_outflows {
+        label="Аутфлов (D_k)"; style=dashed; color=gray;
+        node [shape=diamond, style=filled, fillcolor="#fadadd"];
+        D_C [label="D_C\nd=0.015"];
+        D_L1 [label="D_L1\nd=0.020"];
+        D_L2 [label="D_L2\nd=0.025"];
+        D_L3 [label="D_L3\nd=0.030"];
+        D_L4 [label="D_L4\nd=0.025"];
+        D_I [label="D_I\nd=0.020"];
+        D_S [label="D_S\nd=0.010"];
+    }
+
+    // Модифікатор
+    node [shape=ellipse, style=filled, fillcolor="#e6e0f8"];
+    F   [label="F_k^inner\nаксіома 1"];
+    A   [label="A(t)\nпоглин. зд."];
+    Phi   [label="Φ(t)\nаксіома 2"];
+    G   [label="G_k(t)\nлогіст. обмеж."];
+    E   [label="E(t)\nзовн. тиск"];
+
+    // Flows into / out of stocks
+    EI_C -> C;
+    C   -> D_C;
+    EI_L1 -> L1;
+    L1   -> D_L1;
+    EI_L2 -> L2;
+    L2   -> D_L2;
+    EI_L3 -> L3;
+    L3   -> D_L3;
+    EI_L4 -> L4;
+    L4   -> D_L4;
+    EI_I -> I;
+    I   -> D_I;
+    EI_S -> S;
+    S   -> D_S;
+
+    // Modifier influences
+    C -> F [style=dotted, color=gray];
+    L1 -> F [style=dotted, color=gray];
+    L2 -> F [style=dotted, color=gray];
+    L3 -> F [style=dotted, color=gray];
+    F -> EI_L1 [color="#8c1aff"];
+    F -> EI_L2 [color="#8c1aff"];
+    F -> EI_L3 [color="#8c1aff"];
+    F -> EI_L4 [color="#8c1aff"];
+    L1 -> A [style=dotted, color=gray];
+    A -> EI_C [color="#8c1aff"];
+    A -> EI_L1 [color="#8c1aff"];
+    A -> EI_L2 [color="#8c1aff"];
+    A -> EI_L3 [color="#8c1aff"];
+    A -> EI_L4 [color="#8c1aff"];
+    A -> EI_I [color="#8c1aff"];
+    A -> EI_S [color="#8c1aff"];
+    I -> Phi [style=dotted, color=gray];
+    Phi -> EI_C [color="#8c1aff"];
+    Phi -> EI_L1 [color="#8c1aff"];
+    Phi -> EI_L2 [color="#8c1aff"];
+    Phi -> EI_L3 [color="#8c1aff"];
+    Phi -> EI_L4 [color="#8c1aff"];
+    Phi -> EI_I [color="#8c1aff"];
+    Phi -> EI_S [color="#8c1aff"];
+    C -> G [style=dotted, color=gray];
+    G -> EI_C [color="#8c1aff"];
+    L1 -> G [style=dotted, color=gray];
+    G -> EI_L1 [color="#8c1aff"];
+    L2 -> G [style=dotted, color=gray];
+    G -> EI_L2 [color="#8c1aff"];
+    L3 -> G [style=dotted, color=gray];
+    G -> EI_L3 [color="#8c1aff"];
+    L4 -> G [style=dotted, color=gray];
+    G -> EI_L4 [color="#8c1aff"];
+    I -> G [style=dotted, color=gray];
+    G -> EI_I [color="#8c1aff"];
+    S -> G [style=dotted, color=gray];
+    G -> EI_S [color="#8c1aff"];
+    E -> EI_L4 [color=red, penwidth=1.5];
+
+    // Feedback-loop legend note
+    loops [shape=note, label="Контури зворотного звʼязку:\nR1 (+): DM_I → Φ → EI_k → DM_k → ... → DM_I\nB1 (−): DM_k → G(DM_k) → EI_k (обмеж. росту)\nB2 (−): DM_L1 → A → EI_k (поглин. зд.)\nB3 (−): внутр. шари → F → EI зовн. шарів"];
+}

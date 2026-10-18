@@ -596,3 +596,218 @@ def export_to_xlsx(report, cv_results, multi_horizon, output_path,
     _chart_sensitivity(wb, report, source_label, L)
 
     wb.save(output_path)
+
+
+# ───────────────────── sequence experiment S5 (v1.2.0) ─────────────────────
+# UA: Окремий файл results/sequence_experiment.xlsx; ті самі стилі й правила,
+#     що й для основного звіту (діаграми без заголовків, підпис джерела).
+# EN: Separate file results/sequence_experiment.xlsx; same styles and rules
+#     as the main report (charts without titles, source caption).
+
+SEQ_LAYERS = ["C", "L1", "L2", "L3", "L4"]
+SEQ_METRICS = ("admi", "dm_i", "output")
+
+
+def _seq_sheet_about(wb, report, source_label, L):
+    """UA: Параметри дизайну експерименту. EN: Experiment design parameters."""
+    d = report["design"]
+    ws = wb.create_sheet(L["sheet_seq_about"])
+    _write_title(ws, L["title_seq_about"], 1, 1, 4)
+    _write_headers(ws, [L["seq_col_parameter"], L["seq_col_value"]], 3)
+    seeds = ", ".join(str(1000 + 97 * k) for k in range(d["n_seeds"]))
+    rows = [
+        (L["meta_run_date"],       source_label),
+        ("α",                      d["alpha"]),
+        ("θ (δ)",                  d["theta"]),
+        (L["meta_n_enterprises"],  d["n_enterprises"]),
+        (L["seq_meta_n_seeds"],    d["n_seeds"]),
+        (L["seq_meta_seeds"],      seeds),
+        (L["seq_meta_ladder"],     " → ".join(f"{v:g}" for v in d["ladder"])),
+        (L["seq_meta_focal"],      d["focal_share"]),
+        (L["seq_meta_other"],      d["other_share"]),
+        (L["seq_meta_i"],          d["i_share"]),
+        (L["seq_meta_s"],          d["s_share"]),
+        (L["seq_meta_horizons"],   ", ".join(str(h) for h in d["horizons"])),
+        (L["seq_meta_pressure"],   d["external_pressure"]),
+    ]
+    r = 4
+    for label, value in rows:
+        ws.cell(row=r, column=1, value=label).font = FONT_HEAD
+        ws.cell(row=r, column=2, value=value).font = FONT_NORMAL
+        r += 1
+    r += 1
+    _write_headers(ws, [L["seq_col_key"], L["seq_col_rule"]], r)
+    r += 1
+    for s in d["strategies"]:
+        ws.cell(row=r, column=1, value=s)
+        ws.cell(row=r, column=2, value=L.get(f"seq_rule_{s}", s))
+        r += 1
+    r += 1
+    ws.cell(row=r, column=1, value=L["seq_meta_note"]).font = FONT_HEAD
+    ws.cell(row=r, column=2, value=L["seq_meta_note_text"]).font = FONT_NORMAL
+    _autosize_columns(ws, max_width=60)
+
+
+def _seq_sheet_results(wb, report, source_label, L):
+    """UA: Результати правил по горизонтах. EN: Rule results by horizon."""
+    d = report["design"]
+    ws = wb.create_sheet(L["sheet_seq_results"])
+    headers = [L["seq_col_rule"], L["seq_col_admi"], L["seq_col_sd_between"],
+               L["seq_col_sd_within"], "DM_I", L["seq_col_output"],
+               L["seq_col_level4"]] + [COMPONENT_LABELS[k] for k in SEQ_LAYERS]
+    _write_title(ws, L["title_seq_results"].format(k=d["n_seeds"]), 1, 1, len(headers))
+    r = 3
+    for h in d["horizons"]:
+        ws.cell(row=r, column=1, value=L["seq_md_horizon"].format(h=h)).font = FONT_HEAD
+        ws.cell(row=r, column=1).fill = FILL_TITLE
+        r += 1
+        _write_headers(ws, headers, r)
+        r += 1
+        for s in d["strategies"]:
+            e = report["strategies"][s][str(h)]
+            values = [e["admi"]["mean"], e["admi"]["sd"], e["admi_sd_within"],
+                      e["dm_i"]["mean"], e["output"]["mean"], e["level4_share"]
+                      ] + [e["layers"][k] for k in SEQ_LAYERS]
+            formats = ["0.000"] * 5 + ["0.00%"] + ["0.00"] * len(SEQ_LAYERS)
+            ws.cell(row=r, column=1, value=L.get(f"seq_rule_{s}", s))
+            for i, (v, nf) in enumerate(zip(values, formats)):
+                ws.cell(row=r, column=2 + i, value=float(v)).number_format = nf
+            r += 1
+        r += 1
+    _write_source(ws, L["source_seq"].format(ts=source_label), r, 1, len(headers))
+    _autosize_columns(ws)
+
+
+def _seq_sheet_tau(wb, report, source_label, L):
+    """UA: τ Кендалла за правилами. EN: Kendall's τ by rule."""
+    d = report["design"]
+    ws = wb.create_sheet(L["sheet_seq_tau"])
+    _write_title(ws, L["title_seq_tau"], 1, 1, 4)
+    _write_headers(ws, [L["seq_col_rule"], L["seq_col_tau_mean"], "SD",
+                        L["seq_col_tau_n"]], 3)
+    r = 4
+    for s in d["strategies"]:
+        tau = report["strategies"][s]["tau"]
+        ws.cell(row=r, column=1, value=L.get(f"seq_rule_{s}", s))
+        for i, key in enumerate(("mean", "sd")):
+            v = tau[key]
+            ws.cell(row=r, column=2 + i,
+                    value=None if np.isnan(v) else float(v)).number_format = "0.00"
+        ws.cell(row=r, column=4, value=int(tau["n"]))
+        r += 1
+    r += 1
+    _write_source(ws, L["source_seq"].format(ts=source_label), r, 1, 4)
+    _autosize_columns(ws)
+
+
+def _seq_comparison_label(key, L):
+    left, right = key.split("_minus_")
+    return f"{L.get(f'seq_rule_{left}', left)} − {L.get(f'seq_rule_{right}', right)}"
+
+
+def _seq_sheet_diffs(wb, report, source_label, L):
+    """UA: Парні різниці в довгому форматі. EN: Paired differences, long format."""
+    d = report["design"]
+    ws = wb.create_sheet(L["sheet_seq_diffs"])
+    headers = [L["seq_col_comparison"], L["seq_col_horizon"], L["seq_col_metric"],
+               L["col_mean"], L["seq_col_ci_low"], L["seq_col_ci_high"],
+               L["seq_col_sd_between"], L["seq_col_n_pairs"]]
+    _write_title(ws, L["title_seq_diffs"], 1, 1, len(headers))
+    _write_headers(ws, headers, 3)
+    r = 4
+    for key, entry in report["paired_differences"].items():
+        for h in d["horizons"]:
+            for m in SEQ_METRICS:
+                item = entry[f"{m}_{h}"]
+                ws.cell(row=r, column=1, value=_seq_comparison_label(key, L))
+                ws.cell(row=r, column=2, value=h)
+                ws.cell(row=r, column=3, value=L[f"seq_metric_{m}"])
+                for i, v in enumerate((item["mean"], item["ci95"][0],
+                                       item["ci95"][1], item["sd_between_seeds"])):
+                    ws.cell(row=r, column=4 + i, value=float(v)).number_format = "0.0000"
+                ws.cell(row=r, column=8, value=int(item["n_pairs"]))
+                r += 1
+    r += 1
+    _write_source(ws, L["source_seq"].format(ts=source_label), r, 1, len(headers))
+    _autosize_columns(ws, max_width=40)
+
+
+def _seq_chart_admi(wb, report, source_label, L):
+    """UA: Лінійна діаграма ADMI за горизонтами. EN: Line chart of ADMI by horizon."""
+    d = report["design"]
+    ws = wb.create_sheet(L["sheet_seq_fig_admi"])
+    _write_title(ws, L["title_seq_fig_admi"], 1, 1, 6)
+    headers = [L["seq_col_horizon"]] + [L.get(f"seq_rule_{s}", s) for s in d["strategies"]]
+    _write_headers(ws, headers, 3)
+    for i, h in enumerate(d["horizons"]):
+        ws.cell(row=4 + i, column=1, value=h)
+        for j, s in enumerate(d["strategies"]):
+            ws.cell(row=4 + i, column=2 + j,
+                    value=float(report["strategies"][s][str(h)]["admi"]["mean"])
+                    ).number_format = "0.000"
+    n = len(d["horizons"])
+    ch = LineChart()
+    ch.title = None  # no title (caption provided in publication)
+    ch.y_axis.title = L["ax_admi"]
+    ch.x_axis.title = L["ax_year"]
+    data = Reference(ws, min_col=2, min_row=3,
+                     max_col=1 + len(d["strategies"]), max_row=3 + n)
+    cats = Reference(ws, min_col=1, min_row=4, max_row=3 + n)
+    ch.add_data(data, titles_from_data=True)
+    ch.set_categories(cats)
+    ch.height = 11; ch.width = 18
+    ws.add_chart(ch, "H3")
+    _write_source(ws, L["source_seq"].format(ts=source_label), 5 + n, 1, 6)
+    _autosize_columns(ws)
+
+
+def _seq_chart_diffs(wb, report, source_label, L):
+    """UA: Стовпчикова діаграма парних ΔADMI. EN: Bar chart of paired ΔADMI."""
+    d = report["design"]
+    ws = wb.create_sheet(L["sheet_seq_fig_diff"])
+    _write_title(ws, L["title_seq_fig_diff"], 1, 1, 5)
+    headers = [L["seq_col_comparison"]] + [L["legend_horizon_years"].format(h=h)
+                                           for h in d["horizons"]]
+    _write_headers(ws, headers, 3)
+    keys = list(report["paired_differences"].keys())
+    for i, key in enumerate(keys):
+        ws.cell(row=4 + i, column=1, value=_seq_comparison_label(key, L))
+        for j, h in enumerate(d["horizons"]):
+            ws.cell(row=4 + i, column=2 + j,
+                    value=float(report["paired_differences"][key][f"admi_{h}"]["mean"])
+                    ).number_format = "0.000"
+    ch = BarChart()
+    ch.type = "col"; ch.style = 11
+    ch.title = None  # no title (caption provided in publication)
+    ch.y_axis.title = L["ax_delta_admi"]
+    ch.x_axis.title = L["seq_col_comparison"]
+    data = Reference(ws, min_col=2, min_row=3, max_col=1 + len(d["horizons"]),
+                     max_row=3 + len(keys))
+    cats = Reference(ws, min_col=1, min_row=4, max_row=3 + len(keys))
+    ch.add_data(data, titles_from_data=True)
+    ch.set_categories(cats)
+    ch.height = 11; ch.width = 18
+    ws.add_chart(ch, "G3")
+    _write_source(ws, L["source_seq"].format(ts=source_label), 5 + len(keys), 1, 4)
+    _autosize_columns(ws, max_width=40)
+
+
+def export_sequence_to_xlsx(report, output_path, timestamp=None,
+                            lang: str = "uk") -> None:
+    """
+    UA: Експортує результати експерименту S5 у xlsx (uk / en).
+    EN: Exports the S5 sequence-experiment results to xlsx (uk / en).
+    """
+    L = get_labels(lang)
+    wb = Workbook()
+    if "Sheet" in wb.sheetnames:
+        del wb["Sheet"]
+    if timestamp is None:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+    _seq_sheet_about(wb, report, timestamp, L)
+    _seq_sheet_results(wb, report, timestamp, L)
+    _seq_sheet_tau(wb, report, timestamp, L)
+    _seq_sheet_diffs(wb, report, timestamp, L)
+    _seq_chart_admi(wb, report, timestamp, L)
+    _seq_chart_diffs(wb, report, timestamp, L)
+    wb.save(output_path)

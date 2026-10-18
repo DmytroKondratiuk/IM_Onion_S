@@ -214,6 +214,70 @@ UK = {
     "sf_loop_B2":         "B2 (−): DM_L1 → A → EI_k (поглин. зд.)",
     "sf_loop_B3":         "B3 (−): внутр. шари → F → EI зовн. шарів",
 
+    # ── Sequence experiment S5 (v1.2.0) ──
+    "step_seq":           "[S5] Експеримент із послідовністю шарів",
+    "step_seq_only":      "Лише експеримент S5 (--sequence-only)",
+    "seq_progress":       "Повтор {k}/{n}",
+    "seq_saved":          "Експеримент S5 збережено:",
+    "seq_rule_uniform":       "Рівномірна (статична)",
+    "seq_rule_S2_core":       "С-2 Ядро (статична)",
+    "seq_rule_inner_first":   "Зсередини назовні",
+    "seq_rule_weakest_first": "Найслабший шар",
+    "seq_rule_outer_first":   "Ззовні всередину",
+    "seq_md_title":       "Експеримент S5: ціна відхилення від порядку (3)",
+    "seq_md_design":      "Парний дизайн, {n} підприємств × {k} повторів, "
+                          "спільні випадкові числа. α = {a}, θ = {t}. Зовнішній тиск 0.",
+    "seq_md_horizon":     "Горизонт {h} років",
+    "seq_md_tau_title":   "τ Кендалла між порядком перетину θ і порядком (3)",
+    "seq_md_diff_title":  "Парні різниці (середнє, 95% ДІ за парами; SD середніх між повторами)",
+    "seq_col_rule":       "Правило",
+    "seq_col_key":        "Код",
+    "seq_col_admi_sd":    "ADMI (±SD між повторами)",
+    "seq_col_admi":       "ADMI",
+    "seq_col_sd_between": "SD між повторами",
+    "seq_col_sd_within":  "SD всередині повтору",
+    "seq_col_output":     "Випуск",
+    "seq_col_level4":     "Частка рівня ≥ 4",
+    "seq_col_tau_mean":   "середнє τ",
+    "seq_col_tau_n":      "n підприємств з ≥ 3 перетинами",
+    "seq_col_comparison": "Порівняння",
+    "seq_col_horizon":    "Горизонт",
+    "seq_col_metric":     "Метрика",
+    "seq_col_delta_output": "Δвипуск",
+    "seq_col_ci_low":     "95% ДІ, нижня",
+    "seq_col_ci_high":    "95% ДІ, верхня",
+    "seq_col_n_pairs":    "n пар",
+    "seq_col_parameter":  "Параметр",
+    "seq_col_value":      "Значення",
+    "seq_metric_admi":    "ΔADMI",
+    "seq_metric_dm_i":    "ΔDM_I",
+    "seq_metric_output":  "Δвипуск",
+    "seq_meta_n_seeds":   "Кількість повторів",
+    "seq_meta_seeds":     "Зерна популяцій",
+    "seq_meta_ladder":    "Сходи цілі",
+    "seq_meta_focal":     "Частка фокусного шару",
+    "seq_meta_other":     "Частка решти операційних шарів (разом)",
+    "seq_meta_i":         "Частка зв'язності I",
+    "seq_meta_s":         "Частка готовності S",
+    "seq_meta_horizons":  "Горизонти (років)",
+    "seq_meta_pressure":  "Зовнішній тиск",
+    "seq_meta_note":      "Примітка",
+    "seq_meta_note_text": "Експеримент не перевіряє аксіому 1 (вона закладена в множник F_k), "
+                          "а вимірює величину ефекту порядку за припущень моделі.",
+    "sheet_seq_about":    "S5 Про експеримент",
+    "sheet_seq_results":  "S5 Результати",
+    "sheet_seq_tau":      "S5 Тау Кендалла",
+    "sheet_seq_diffs":    "S5 Парні різниці",
+    "sheet_seq_fig_admi": "S5 Рис. ADMI",
+    "sheet_seq_fig_diff": "S5 Рис. Різниці",
+    "title_seq_about":    "Експеримент S5: ціна відхилення від порядку шарів C → L1 → L2 → L3 → L4",
+    "title_seq_results":  "Результати правил за горизонтами (середнє по {k} повторах)",
+    "title_seq_tau":      "τ Кендалла між порядком перетину θ і порядком (3)",
+    "title_seq_diffs":    "Парні різниці «ліве − праве» (середнє, 95% ДІ за парами)",
+    "title_seq_fig_admi": "Рис. S5.1. Середній ADMI за правилами й горизонтами",
+    "title_seq_fig_diff": "Рис. S5.2. Парні різниці ΔADMI за горизонтами",
+    "source_seq":         "Джерело: експеримент S5 (парний дизайн), {ts}",
+
     # ── Misc ──
     "n_a":                  "n/a",
     "dash":                 "–",
@@ -422,6 +486,70 @@ EN = {
     "sf_loop_B2":         "B2 (−): DM_L1 → A → EI_k (absorptive cap.)",
     "sf_loop_B3":         "B3 (−): inner layers → F → EI outer layers",
 
+    # ── Sequence experiment S5 (v1.2.0) ──
+    "step_seq":           "[S5] Layer-sequence experiment",
+    "step_seq_only":      "Sequence experiment S5 only (--sequence-only)",
+    "seq_progress":       "Replication {k}/{n}",
+    "seq_saved":          "Sequence experiment S5 saved:",
+    "seq_rule_uniform":       "Uniform (static)",
+    "seq_rule_S2_core":       "S-2 Core (static)",
+    "seq_rule_inner_first":   "Inner first",
+    "seq_rule_weakest_first": "Weakest first",
+    "seq_rule_outer_first":   "Outer first",
+    "seq_md_title":       "Sequence experiment S5: the cost of departing from order (3)",
+    "seq_md_design":      "Paired design, {n} enterprises × {k} replications, "
+                          "common random numbers. α = {a}, θ = {t}. No external pressure.",
+    "seq_md_horizon":     "Horizon {h} years",
+    "seq_md_tau_title":   "Kendall's τ between the θ-crossing order and order (3)",
+    "seq_md_diff_title":  "Paired differences (mean, 95% CI over pairs; SD of replication means)",
+    "seq_col_rule":       "Rule",
+    "seq_col_key":        "Key",
+    "seq_col_admi_sd":    "ADMI (±SD between replications)",
+    "seq_col_admi":       "ADMI",
+    "seq_col_sd_between": "SD between replications",
+    "seq_col_sd_within":  "SD within replication",
+    "seq_col_output":     "Output",
+    "seq_col_level4":     "Share at level ≥ 4",
+    "seq_col_tau_mean":   "mean τ",
+    "seq_col_tau_n":      "n enterprises with ≥ 3 crossings",
+    "seq_col_comparison": "Comparison",
+    "seq_col_horizon":    "Horizon",
+    "seq_col_metric":     "Metric",
+    "seq_col_delta_output": "Δoutput",
+    "seq_col_ci_low":     "95% CI, lower",
+    "seq_col_ci_high":    "95% CI, upper",
+    "seq_col_n_pairs":    "n pairs",
+    "seq_col_parameter":  "Parameter",
+    "seq_col_value":      "Value",
+    "seq_metric_admi":    "ΔADMI",
+    "seq_metric_dm_i":    "ΔDM_I",
+    "seq_metric_output":  "Δoutput",
+    "seq_meta_n_seeds":   "Number of replications",
+    "seq_meta_seeds":     "Population seeds",
+    "seq_meta_ladder":    "Target ladder",
+    "seq_meta_focal":     "Focal-layer share",
+    "seq_meta_other":     "Other operational layers' share (total)",
+    "seq_meta_i":         "Connectivity I share",
+    "seq_meta_s":         "Readiness S share",
+    "seq_meta_horizons":  "Horizons (years)",
+    "seq_meta_pressure":  "External pressure",
+    "seq_meta_note":      "Note",
+    "seq_meta_note_text": "The experiment does not test Axiom 1 (it is built into the multiplier F_k); "
+                          "it measures the size of the order effect under the model's assumptions.",
+    "sheet_seq_about":    "S5 About",
+    "sheet_seq_results":  "S5 Results",
+    "sheet_seq_tau":      "S5 Kendall tau",
+    "sheet_seq_diffs":    "S5 Paired differences",
+    "sheet_seq_fig_admi": "S5 Fig. ADMI",
+    "sheet_seq_fig_diff": "S5 Fig. Differences",
+    "title_seq_about":    "Sequence experiment S5: the cost of departing from the layer order C → L1 → L2 → L3 → L4",
+    "title_seq_results":  "Rule results by horizon (mean over {k} replications)",
+    "title_seq_tau":      "Kendall's τ between the θ-crossing order and order (3)",
+    "title_seq_diffs":    "Paired differences \"left − right\" (mean, 95% CI over pairs)",
+    "title_seq_fig_admi": "Fig. S5.1. Mean ADMI by rule and horizon",
+    "title_seq_fig_diff": "Fig. S5.2. Paired ΔADMI differences by horizon",
+    "source_seq":         "Source: sequence experiment S5 (paired design), {ts}",
+
     # ── Misc ──
     "n_a":                  "n/a",
     "dash":                 "–",
@@ -429,6 +557,11 @@ EN = {
 
 
 _LABELS = {"uk": UK, "en": EN}
+
+# Language versions of every output file: language -> file-name suffix.
+# English has no suffix (as README.md / README.uk.md), so the published
+# file names stay unchanged; Ukrainian files get ".uk" before the extension.
+OUTPUT_LANGS = {"en": "", "uk": ".uk"}
 
 
 def get_labels(lang: str = "uk") -> dict:
@@ -465,6 +598,11 @@ LEVEL_FULL_KEYS = ["level_1_full", "level_2_full", "level_3_full",
                    "level_4_full", "level_5_full"]
 LEVEL_SHORT_KEYS = ["level_1_short", "level_2_short", "level_3_short",
                     "level_4_short", "level_5_short"]
+
+
+def sequence_rule_label(key: str, labels: dict) -> str:
+    """Translates a sequence-experiment rule key (inner_first, ...) via labels dict."""
+    return labels.get(f"seq_rule_{key}", key)
 
 
 def levels_full(labels: dict) -> list:

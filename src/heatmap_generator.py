@@ -72,19 +72,24 @@ def plot_calibration_heatmap(grid: np.ndarray, alpha_range: Sequence[float],
 
 def generate_all(cv_results: Dict, calib_grid: np.ndarray,
                  alpha_range: Sequence[float], delta_range: Sequence[float],
-                 output_dir: str, lang: str = "uk") -> Dict[str, str]:
+                 output_dir: str, lang: str = "uk",
+                 suffix: str = "") -> Dict[str, str]:
+    """
+    Generates the Markov heatmaps and the J(α,δ) heatmap. `suffix` is
+    inserted before `.png` (e.g. ".uk" -> heatmap_uniform.uk.png).
+    """
     labels = get_labels(lang)
     os.makedirs(output_dir, exist_ok=True)
     paths = {}
 
     for scenario_name, cv in cv_results.items():
         P = np.array(cv["transition_matrix"])
-        fname = f"heatmap_{scenario_name}.png"
+        fname = f"heatmap_{scenario_name}{suffix}.png"
         fpath = os.path.join(output_dir, fname)
         plot_markov_heatmap(P, labels, fpath)
         paths[f"heatmap_{scenario_name}"] = fpath
 
-    calib_path = os.path.join(output_dir, "heatmap_calibration.png")
+    calib_path = os.path.join(output_dir, f"heatmap_calibration{suffix}.png")
     plot_calibration_heatmap(np.array(calib_grid), alpha_range, delta_range,
                               labels, calib_path)
     paths["heatmap_calibration"] = calib_path
