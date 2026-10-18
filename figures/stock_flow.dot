@@ -4,9 +4,9 @@ digraph Onion_S_SD_Model {
     node  [fontname="Arial", fontsize=10];
     edge  [fontname="Arial", fontsize=9];
 
-    // Інфлов (EI_k)
+    // Inflow (EI_k)
     subgraph cluster_inflows {
-        label="Інфлов (EI_k)"; style=dashed; color=gray;
+        label="Inflow (EI_k)"; style=dashed; color=gray;
         node [shape=diamond, style=filled, fillcolor="#d4f1d4"];
         EI_C [label="EI_C"];
         EI_L1 [label="EI_L1"];
@@ -17,22 +17,22 @@ digraph Onion_S_SD_Model {
         EI_S [label="EI_S"];
     }
 
-    // Запас (DM_k)
+    // Stock (DM_k)
     subgraph cluster_stocks {
-        label="Запас (DM_k)"; style=dashed; color=gray;
+        label="Stock (DM_k)"; style=dashed; color=gray;
         node [shape=box, style=filled, fillcolor="#fff4c2"];
-        C [label="DM_C\n(ядро)"];
+        C [label="DM_C\n(core)"];
         L1 [label="DM_L₁\n(HR)"];
-        L2 [label="DM_L₂\n(матеріали)"];
-        L3 [label="DM_L₃\n(логістика)"];
-        L4 [label="DM_L₄\n(збут)"];
-        I [label="DM_I\n(інтеграція)"];
-        S [label="DM_S\n(стратегія)"];
+        L2 [label="DM_L₂\n(materials)"];
+        L3 [label="DM_L₃\n(logistics)"];
+        L4 [label="DM_L₄\n(sales)"];
+        I [label="DM_I\n(integration)"];
+        S [label="DM_S\n(strategy)"];
     }
 
-    // Аутфлов (D_k)
+    // Outflow (D_k)
     subgraph cluster_outflows {
-        label="Аутфлов (D_k)"; style=dashed; color=gray;
+        label="Outflow (D_k)"; style=dashed; color=gray;
         node [shape=diamond, style=filled, fillcolor="#fadadd"];
         D_C [label="D_C\nd=0.015"];
         D_L1 [label="D_L1\nd=0.020"];
@@ -43,13 +43,13 @@ digraph Onion_S_SD_Model {
         D_S [label="D_S\nd=0.010"];
     }
 
-    // Модифікатор
+    // Modifier
     node [shape=ellipse, style=filled, fillcolor="#e6e0f8"];
-    F   [label="F_k^inner\nаксіома 1"];
-    A   [label="A(t)\nпоглин. зд."];
-    Phi   [label="Φ(t)\nаксіома 2"];
-    G   [label="G_k(t)\nлогіст. обмеж."];
-    E   [label="E(t)\nзовн. тиск"];
+    F   [label="F_k^inner\naxiom 1"];
+    A   [label="A(t)\nabsorptive cap."];
+    Phi   [label="Φ(t)\naxiom 2"];
+    G   [label="G_k(t)\nlogistic limit"];
+    E   [label="E(t)\nexternal pressure"];
 
     // Flows into / out of stocks
     EI_C -> C;
@@ -109,5 +109,5 @@ digraph Onion_S_SD_Model {
     E -> EI_L4 [color=red, penwidth=1.5];
 
     // Feedback-loop legend note
-    loops [shape=note, label="Контури зворотного звʼязку:\nR1 (+): DM_I → Φ → EI_k → DM_k → ... → DM_I\nB1 (−): DM_k → G(DM_k) → EI_k (обмеж. росту)\nB2 (−): DM_L1 → A → EI_k (поглин. зд.)\nB3 (−): внутр. шари → F → EI зовн. шарів"];
+    loops [shape=note, label="Feedback loops:\nR1 (+): DM_I → Φ → EI_k → DM_k → ... → DM_I\nB1 (−): DM_k → G(DM_k) → EI_k (growth limit)\nB2 (−): DM_L1 → A → EI_k (absorptive cap.)\nB3 (−): inner layers → F → EI outer layers"];
 }
