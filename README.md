@@ -8,7 +8,7 @@ Strategic management simulation of digital transformation based on **System Dyna
 
 Outputs are a structured xlsx report with 20 sheets (tables + embedded charts + conditional-formatting heatmaps) and a set of PNG charts ready for publications.
 
-Part of a PhD research project (Economics, specialty 051). All output is bilingual (Ukrainian / English) with runtime switching.
+Part of a PhD research project (Economics, specialty 051). Every report file is written in both languages in one run: English without a suffix, Ukrainian with `.uk` before the extension (e.g. `onion_s_simulation.xlsx` and `onion_s_simulation.uk.xlsx`).
 
 ---
 
@@ -22,10 +22,10 @@ pip3 install -r requirements.txt
 python3 generate_report.py
 ```
 
-The script asks which language (`uk` / `en`) to use, then runs the simulation and saves outputs to:
-- `results/simulation_report.json` — raw data
-- `results/onion_s_simulation.xlsx` — full xlsx report
-- `figures/stock_flow.png`, `figures/stock_flow.dot` — Stock-and-Flow diagram
+The script asks which language (`uk` / `en`) to use for console messages, then runs the simulation and saves outputs in both languages to:
+- `results/simulation_report.json` — raw data (language-independent)
+- `results/onion_s_simulation.xlsx`, `results/onion_s_simulation.uk.xlsx` — full xlsx report, English / Ukrainian
+- `figures/stock_flow{,.uk}.png`, `figures/stock_flow{,.uk}.dot` — Stock-and-Flow diagram, English / Ukrainian
 
 ---
 
@@ -33,12 +33,14 @@ The script asks which language (`uk` / `en`) to use, then runs the simulation an
 
 | Flag | Description |
 |---|---|
-| `--lang uk` / `--lang en` | Output language (skips interactive prompt) |
+| `--lang uk` / `--lang en` | Console language (skips interactive prompt); files are always written in both languages |
 | `--quick` | Quick mode: 200 enterprises × 3 runs (≈8 s instead of ≈3–5 min) |
 | `--no-multi` | Skip multi-horizon analysis (10 / 15 years) |
 | `--export-pngs` | Generate PNGs for all 5 main charts + 4 heatmaps |
 | `--output-dir PATH` | Custom folder for JSON / xlsx (default: `./results`) |
 | `--figures-dir PATH` | Custom folder for PNG / .dot (default: `./figures`) |
+| `--sequence` | Also run the sequence experiment S5 after the main pipeline (≈ 20 s – 2 min) |
+| `--sequence-only` | Run only the sequence experiment S5 and skip the main pipeline |
 
 ### Examples
 
@@ -51,6 +53,9 @@ python3 generate_report.py --lang en --export-pngs
 
 # Without 10 / 15-year horizons (faster)
 python3 generate_report.py --lang en --no-multi --export-pngs
+
+# Sequence experiment S5 only
+python3 generate_report.py --lang en --sequence-only
 ```
 
 ---
@@ -60,7 +65,7 @@ python3 generate_report.py --lang en --no-multi --export-pngs
 ### `results/simulation_report.json`
 Structured JSON with all raw data: calibration, ADMI trajectories, per-component DM, Markov transition matrices, stationary distributions, hitting times, parameter sensitivity, multi-horizon results.
 
-### `results/onion_s_simulation.xlsx`
+### `results/onion_s_simulation.xlsx` (English) and `results/onion_s_simulation.uk.xlsx` (Ukrainian)
 20 sheets, split into 2 groups:
 
 **Data tables (15 sheets):**
@@ -101,7 +106,19 @@ Structured JSON with all raw data: calibration, ADMI trajectories, per-component
 | `heatmap_S3_integration.png` | Transition matrix — S-3 Integration |
 | `heatmap_calibration.png` | J(α, δ) heatmap with optimum marker |
 
-None of the PNGs have an overlaid title — the caption is added in the publication text.
+Each file also has a Ukrainian version with `.uk` before the extension (e.g. `trajectories_admi.uk.png`, `stock_flow.uk.dot`). None of the PNGs have an overlaid title — the caption is added in the publication text.
+
+### `results/sequence_experiment.*` (with `--sequence` / `--sequence-only`)
+
+Results of the sequence experiment S5 (see below). The experiment runs once and always writes both language versions, whatever `--lang` is set to:
+
+| File | Content |
+|---|---|
+| `sequence_experiment.json` | raw data (language-independent) |
+| `sequence_experiment.xlsx` / `sequence_experiment.uk.xlsx` | tables and charts, English / Ukrainian |
+| `sequence_experiment.md` / `sequence_experiment.uk.md` | the same tables in Markdown, English / Ukrainian |
+
+The xlsx has 6 sheets: About (design parameters), Results by horizon (ADMI, DM_I, output, share at level ≥ 4, layer states), Kendall τ, Paired differences with 95 % CI, and two chart sheets (ADMI by rule and horizon, paired ΔADMI). The md files repeat the same tables in Markdown; the Ukrainian one uses decimal commas.
 
 ---
 
@@ -118,13 +135,32 @@ None of the PNGs have an overlaid title — the caption is added in the publicat
 
 ## Reproducibility of published results
 
-The committed `results/` and `figures/` are produced by the **default deterministic run**:
+The committed `results/` and `figures/` (both language versions) are produced by the **default deterministic run**:
 
 ```bash
 python3 generate_report.py --lang en --quick --export-pngs
 ```
 
 This run uses the fixed dissertation seeds (`DEFAULT_SEEDS` in `generate_report.py`) and the quick design of **3 independent runs × 200 synthetic enterprises** (600 in total), plus the multi-horizon block (5/10/15 years). All figures quoted in the dissertation and in the related journal article (calibrated α = 0.40, δ = 0.375; baseline ADMI 0.393 → 0.348 over 5 years and −0.121 over 15 years; +0.029 for the core strategy; 3.5× relative growth for the integration strategy) are reproduced exactly by this command. The full mode (10 runs × 1000 enterprises, run without `--quick`) is available for robustness checks but is not the source of the published numbers. Passing `--seed N` derives a different seed bundle and therefore yields different values.
+
+### Sequence experiment (v1.2.0)
+
+The static budget scenarios keep fixed shares over the whole horizon and therefore do not implement an investment *sequence*. The sequence experiment (`src/sequence_experiment.py`) measures the cost of departing from the layer order C → L1 → L2 → L3 → L4 inside the model:
+
+```bash
+python3 generate_report.py --lang en --sequence-only   # ≈ 20 s – 2 min, writes results/sequence_experiment.* (uk + en)
+python3 src/sequence_experiment.py --lang en           # the same, standalone
+```
+
+Three dynamic rules with identical budget intensity re-select a focal layer every quarter (55 % of the budget; other operational layers 5 % each, integration 15 %, strategic readiness 10 %). The target rises in steps δ = 0.375 → 0.60 → 0.80. *inner_first* picks the innermost layer below target, *weakest_first* the weakest layer regardless of order, *outer_first* the outermost layer below target; static *uniform* and *S2_core* are included for reference. Paired design: the same 200 enterprises and the same noise seed for every rule, 10 replications (seeds 1000 + 97·k), no external pressure.
+
+Key 15-year results: inner_first − outer_first ΔADMI +0.031 (95 % CI 0.030–0.032), Δoutput +0.023; inner_first − weakest_first ΔADMI +0.011, Δoutput −0.003; S2_core − uniform ΔADMI +0.005, Δoutput −0.035. The experiment does **not** test Axiom 1 — it is built into the inner-layer multiplier — it quantifies the size of the order effect under the model's assumptions.
+
+---
+
+## Model specification
+
+The full model description (variables, equations, parameters, synthetic sample, calibration of α and δ, scenario results, sensitivity, sequence experiment) is given in [`docs/model_specification.md`](docs/model_specification.md) (Ukrainian version: [`docs/model_specification.uk.md`](docs/model_specification.uk.md)). Articles based on the model cite this document and reproduce only the parts they need in their appendices.
 
 ---
 
@@ -160,7 +196,7 @@ CONFIG = {
 }
 ```
 
-New scenarios are added to `CONFIG["scenarios"]` + translations in `src/i18n.py` (`SCENARIO_KEY_MAP` + UK / EN dictionaries).
+New scenarios are added to `CONFIG["scenarios"]` + translations in `src/i18n.py` (`SCENARIO_KEY_MAP` + UK / EN dictionaries). Parameters of the sequence experiment (budget shares, target ladder, replications) are constants at the top of `src/sequence_experiment.py`; its labels are the `seq_*` keys in `src/i18n.py`.
 
 ---
 
@@ -173,7 +209,7 @@ repository" button in the sidebar automatically.
 **Recommended citation (APA-like):**
 
 > Kondratiuk, D. (2026). *IM Onion-S — Simulation Model of Digital
-> Transformation of Agri-food Enterprises* (Version 1.1.0) [Computer software].
+> Transformation of Agri-food Enterprises* (Version 1.2.0) [Computer software].
 > Zenodo. https://doi.org/10.5281/zenodo.19979159
 
 **BibTeX:**
@@ -184,7 +220,7 @@ repository" button in the sidebar automatically.
   title        = {{IM Onion-S — Simulation Model of Digital
                    Transformation of Agri-food Enterprises}},
   year         = {2026},
-  version      = {1.1.0},
+  version      = {1.2.0},
   publisher    = {Zenodo},
   doi          = {10.5281/zenodo.19979159},
   url          = {https://doi.org/10.5281/zenodo.19979159}
@@ -194,7 +230,7 @@ repository" button in the sidebar automatically.
 **ДСТУ 8302:2015 (Ukrainian academic standard):**
 
 > Кондратюк Д. IM Onion-S — Simulation Model of Digital Transformation of
-> Agri-food Enterprises: комп'ютерна програма. Версія 1.1.0. Zenodo, 2026.
+> Agri-food Enterprises: комп'ютерна програма. Версія 1.2.0. Zenodo, 2026.
 > DOI: 10.5281/zenodo.19979159. URL:
 > https://github.com/DmytroKondratiuk/im_onion_s
 

@@ -209,12 +209,15 @@ def render_png(output_path: str, labels: dict, dpi: int = 160) -> None:
     plt.close(fig)
 
 
-def generate(output_dir: str, lang: str = "uk") -> dict:
-    """Generates both .dot and .png. Returns {dot: path, png: path}."""
+def generate(output_dir: str, lang: str = "uk", suffix: str = "") -> dict:
+    """
+    Generates both .dot and .png. Returns {dot: path, png: path}.
+    `suffix` is inserted before the extension (e.g. ".uk" -> stock_flow.uk.png).
+    """
     labels = get_labels(lang)
     os.makedirs(output_dir, exist_ok=True)
-    dot_path = os.path.join(output_dir, "stock_flow.dot")
-    png_path = os.path.join(output_dir, "stock_flow.png")
+    dot_path = os.path.join(output_dir, f"stock_flow{suffix}.dot")
+    png_path = os.path.join(output_dir, f"stock_flow{suffix}.png")
     write_dot(dot_path, labels)
     render_png(png_path, labels)
     return {"dot": dot_path, "png": png_path}

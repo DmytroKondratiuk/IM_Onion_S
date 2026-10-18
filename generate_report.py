@@ -6,14 +6,22 @@ Usage:
     python3 generate_report.py --lang uk         # skip the prompt
     python3 generate_report.py --lang en --quick --export-pngs
     python3 generate_report.py --no-multi        # skip 10/15-year horizons
+    python3 generate_report.py --sequence        # also run sequence experiment S5
+    python3 generate_report.py --sequence-only   # run only sequence experiment S5
     python3 generate_report.py --help
 
-Outputs (default paths are relative to the repo root):
-    results/simulation_report.json          — raw data
-    results/onion_s_simulation.xlsx         — xlsx with tables and charts
-    figures/stock_flow.png, stock_flow.dot  — Stock-and-Flow diagram
-    figures/heatmap_*.png (with --export-pngs) — Markov heatmaps + J(α,δ)
-    figures/*.png                           — 5 main charts (with --export-pngs)
+Outputs (default paths are relative to the repo root). Every language-
+dependent file is written in both languages: English without a suffix,
+Ukrainian with ".uk" before the extension (see i18n.OUTPUT_LANGS). --lang only
+sets the console language.
+    results/simulation_report.json          — raw data (language-independent)
+    results/onion_s_simulation{,.uk}.xlsx   — xlsx with tables and charts
+    figures/stock_flow{,.uk}.png, .dot      — Stock-and-Flow diagram
+    figures/heatmap_*{,.uk}.png (with --export-pngs) — Markov heatmaps + J(α,δ)
+    figures/*{,.uk}.png                     — 5 main charts (with --export-pngs)
+    results/sequence_experiment.{json,xlsx,md}      — sequence experiment S5, EN
+    results/sequence_experiment.uk.{xlsx,md}        — the same, UK
+                                              (with --sequence / --sequence-only)
 
 Installing dependencies:
     pip3 install -r requirements.txt
@@ -43,7 +51,8 @@ import export_to_xlsx as xlsx_exporter  # noqa: E402
 import stock_flow_diagram  # noqa: E402
 import heatmap_generator  # noqa: E402
 import chart_pngs  # noqa: E402
-from i18n import get_labels, prompt_language  # noqa: E402
+import sequence_experiment  # noqa: E402
+from i18n import get_labels, prompt_language, OUTPUT_LANGS  # noqa: E402
 
 
 # ────────────────────────────────────────────────────────
@@ -214,13 +223,33 @@ def run_multihorizon_analysis(alpha: float, delta: float, L: dict,
     return {"scenarios_by_horizon": scenarios_by_horizon}
 
 
+def run_sequence_step(output_dir: str, lang: str, L: dict,
+                      timestamp: str = None) -> dict:
+    """
+    Runs the sequence experiment S5 (src/sequence_experiment.py) and saves
+    results/sequence_experiment.json plus xlsx and md in both languages
+    (sequence_experiment.{xlsx,md} in English, sequence_experiment.uk.{xlsx,md}
+    in Ukrainian). Independent of the main
+    pipeline: fixed α, θ and its own seeds, so the output does not depend on
+    --quick or --seed.
+    """
+    print(f"\n{L['step_seq']}...")
+    paths = sequence_experiment.run_and_save(output_dir, lang=lang,
+                                             timestamp=timestamp)
+    print(f"  {L['seq_saved']}")
+    for kind, path in paths.items():
+        print(f"    {kind}: {path}")
+    return paths
+
+
 # ────────────────────────────────────────────────────────
 
 def main():
     parser = argparse.ArgumentParser(
         description="IM Onion-S — full simulation report (xlsx + PNG)")
     parser.add_argument("--lang", choices=["uk", "en"], default=None,
-                        help="Output language; omit to prompt interactively")
+                        help="Console language (all files are written in both "
+                             "uk and en); omit to prompt interactively")
     parser.add_argument("--export-pngs", action="store_true",
                         help="Save standalone PNGs for all charts and heatmaps")
     parser.add_argument("--no-multi", action="store_true",
@@ -235,11 +264,25 @@ def main():
                         help="Folder for JSON and xlsx (default: ./results)")
     parser.add_argument("--figures-dir", default=os.path.join(_HERE, "figures"),
                         help="Folder for PNG and .dot (default: ./figures)")
+    parser.add_argument("--sequence", action="store_true",
+                        help="Also run the sequence experiment S5 (≈ 2 min); "
+                             "writes results/sequence_experiment.* in uk + en")
+    parser.add_argument("--sequence-only", action="store_true",
+                        help="Run only the sequence experiment S5 and skip the "
+                             "main pipeline")
     args = parser.parse_args()
 
     lang = args.lang if args.lang else prompt_language()
     L = get_labels(lang)
     print(f"  {L['lang_confirmed']}")
+
+    if args.sequence_only:
+        print(f"  {L['step_seq_only']}")
+        run_sequence_step(args.output_dir, lang, L)
+        print(f"\n{'═' * 72}")
+        print(f"  {L['report_complete']}")
+        print(f"{'═' * 72}")
+        return
 
     seeds = derive_seeds(args.seed)
     if args.seed is not None:
@@ -263,41 +306,54 @@ def main():
         json.dump(report, f, indent=2, ensure_ascii=False, default=str)
     print(f"\n  {L['json_saved'].format(path=json_path)}")
 
+    # Every language-dependent output is written once per language in
+    # OUTPUT_LANGS (en without a suffix, uk with ".uk"); the simulation itself
+    # runs only once, so both versions hold the same numbers.
     print(f"\n  {L['sf_generating']}")
-    sf_paths = stock_flow_diagram.generate(args.figures_dir, lang=lang)
-    for k, v in sf_paths.items():
-        print(f"    {k}: {v}")
+    for out_lang, suffix in OUTPUT_LANGS.items():
+        sf_paths = stock_flow_diagram.generate(args.figures_dir, lang=out_lang,
+                                               suffix=suffix)
+        for k, v in sf_paths.items():
+            print(f"    {k} ({out_lang}): {v}")
 
     if args.export_pngs:
         print(f"\n  {L['heatmap_exporting']}")
-        hm_paths = heatmap_generator.generate_all(
+        for out_lang, suffix in OUTPUT_LANGS.items():
+            hm_paths = heatmap_generator.generate_all(
+                cv_results=report["cross_validation"],
+                calib_grid=np.array(report["calibration_grid"]),
+                alpha_range=report["alpha_range"],
+                delta_range=report["delta_range"],
+                output_dir=args.figures_dir, lang=out_lang, suffix=suffix,
+            )
+            for k, v in hm_paths.items():
+                print(f"    {k} ({out_lang}): {v}")
+
+        print(f"\n  {L['charts_exporting']}")
+        for out_lang, suffix in OUTPUT_LANGS.items():
+            ch_paths = chart_pngs.generate_all(report, args.figures_dir,
+                                               lang=out_lang, suffix=suffix)
+            for k, v in ch_paths.items():
+                print(f"    {k} ({out_lang}): {v}")
+
+    print(f"\n  {L['xlsx_exporting']}")
+    for out_lang, suffix in OUTPUT_LANGS.items():
+        xlsx_path = os.path.join(args.output_dir,
+                                 f"onion_s_simulation{suffix}.xlsx")
+        xlsx_exporter.export_to_xlsx(
+            report=report,
             cv_results=report["cross_validation"],
+            multi_horizon=report.get("multi_horizon"),
+            output_path=xlsx_path,
             calib_grid=np.array(report["calibration_grid"]),
             alpha_range=report["alpha_range"],
             delta_range=report["delta_range"],
-            output_dir=args.figures_dir, lang=lang,
+            timestamp=timestamp, lang=out_lang,
         )
-        for k, v in hm_paths.items():
-            print(f"    {k}: {v}")
+        print(f"    {L['xlsx_saved'].format(path=xlsx_path)}")
 
-        print(f"\n  {L['charts_exporting']}")
-        ch_paths = chart_pngs.generate_all(report, args.figures_dir, lang=lang)
-        for k, v in ch_paths.items():
-            print(f"    {k}: {v}")
-
-    xlsx_path = os.path.join(args.output_dir, "onion_s_simulation.xlsx")
-    print(f"\n  {L['xlsx_exporting']}")
-    xlsx_exporter.export_to_xlsx(
-        report=report,
-        cv_results=report["cross_validation"],
-        multi_horizon=report.get("multi_horizon"),
-        output_path=xlsx_path,
-        calib_grid=np.array(report["calibration_grid"]),
-        alpha_range=report["alpha_range"],
-        delta_range=report["delta_range"],
-        timestamp=timestamp, lang=lang,
-    )
-    print(f"    {L['xlsx_saved'].format(path=xlsx_path)}")
+    if args.sequence:
+        run_sequence_step(args.output_dir, lang, L, timestamp)
 
     print(f"\n{'═' * 72}")
     print(f"  {L['report_complete']}")

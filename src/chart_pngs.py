@@ -189,30 +189,34 @@ def plot_sensitivity_tornado(sensitivity: Dict, output_path: str, labels: dict,
     plt.close(fig)
 
 
-def generate_all(report: Dict, output_dir: str, lang: str = "uk") -> Dict[str, str]:
-    """Generates all 5 PNG charts. Label language is controlled via `lang`."""
+def generate_all(report: Dict, output_dir: str, lang: str = "uk",
+                 suffix: str = "") -> Dict[str, str]:
+    """
+    Generates all 5 PNG charts. Label language is controlled via `lang`;
+    `suffix` is inserted before `.png` (e.g. ".uk" -> trajectories_admi.uk.png).
+    """
     labels = get_labels(lang)
     os.makedirs(output_dir, exist_ok=True)
     paths = {}
 
-    tr_path = os.path.join(output_dir, "trajectories_admi.png")
+    tr_path = os.path.join(output_dir, f"trajectories_admi{suffix}.png")
     plot_trajectories(report["scenarios"], tr_path, labels)
     paths["trajectories"] = tr_path
 
-    pr_path = os.path.join(output_dir, "profiles_radar.png")
+    pr_path = os.path.join(output_dir, f"profiles_radar{suffix}.png")
     plot_profiles_radar(report["scenarios"], pr_path, labels)
     paths["profiles"] = pr_path
 
     if report.get("multi_horizon"):
-        mh_path = os.path.join(output_dir, "multi_horizon_bar.png")
+        mh_path = os.path.join(output_dir, f"multi_horizon_bar{suffix}.png")
         plot_multihorizon_bar(report["multi_horizon"], mh_path, labels)
         paths["multi_horizon"] = mh_path
 
-    cv_path = os.path.join(output_dir, "cross_validation_bar.png")
+    cv_path = os.path.join(output_dir, f"cross_validation_bar{suffix}.png")
     plot_crossvalidation_bar(report["cross_validation"], cv_path, labels)
     paths["cross_validation"] = cv_path
 
-    sn_path = os.path.join(output_dir, "sensitivity_tornado.png")
+    sn_path = os.path.join(output_dir, f"sensitivity_tornado{suffix}.png")
     plot_sensitivity_tornado(report["sensitivity"], sn_path, labels)
     paths["sensitivity"] = sn_path
 
